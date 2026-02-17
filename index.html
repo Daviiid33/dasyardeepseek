@@ -1,0 +1,971 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ARTA BEARING - با دستیار هوشمند DeepSeek</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+        
+        body {
+            background: #f8fafc;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            width: 100%;
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 20px 35px -8px rgba(0, 0, 0, 0.1);
+            padding: 24px;
+        }
+        
+        /* هدر */
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .logo-icon {
+            width: 44px;
+            height: 44px;
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 20px;
+            box-shadow: 0 6px 12px rgba(59, 130, 246, 0.25);
+        }
+        
+        .logo-text {
+            font-weight: 700;
+            font-size: 18px;
+            color: #1e293b;
+        }
+        
+        .badge {
+            background: linear-gradient(135deg, #f1f5f9, #e2e8f0);
+            color: #1e293b;
+            padding: 8px 16px;
+            border-radius: 40px;
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+        }
+        
+        /* انتخابگر حالت */
+        .mode-selector {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 24px;
+            background: #f1f5f9;
+            padding: 6px;
+            border-radius: 50px;
+        }
+        
+        .mode-btn {
+            flex: 1;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 40px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            background: transparent;
+            color: #64748b;
+            transition: all 0.3s ease;
+        }
+        
+        .mode-btn.active {
+            background: white;
+            color: #3b82f6;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+        
+        /* کارت اطلاعات */
+        .info-card {
+            background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+            border-radius: 20px;
+            padding: 18px 24px;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .info-text {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #1e293b;
+            font-weight: 500;
+        }
+        
+        .info-badge {
+            background: #3b82f6;
+            color: white;
+            padding: 6px 18px;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 14px;
+            box-shadow: 0 4px 10px rgba(59, 130, 246, 0.3);
+        }
+        
+        /* چیدمان اصلی */
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 24px;
+        }
+        
+        /* بخش جستجو */
+        .search-section {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 24px;
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+        
+        .mode-hint {
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            border-radius: 16px;
+            padding: 14px 20px;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #1e4b8b;
+            font-weight: 500;
+        }
+        
+        .dimensions {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        
+        .dimension-card {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 18px;
+            padding: 16px;
+            transition: all 0.2s;
+        }
+        
+        .dimension-card:hover {
+            border-color: #3b82f6;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+        }
+        
+        .dimension-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .dimension-title code {
+            background: #f1f5f9;
+            padding: 4px 8px;
+            border-radius: 8px;
+            font-size: 11px;
+            color: #3b82f6;
+        }
+        
+        .input-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .input-group input {
+            flex: 1;
+            padding: 10px 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 13px;
+            direction: ltr;
+            text-align: center;
+            transition: all 0.2s;
+        }
+        
+        .input-group input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        
+        .search-btn {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            color: white;
+            border: none;
+            width: 100%;
+            padding: 16px;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3);
+        }
+        
+        .search-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 25px rgba(59, 130, 246, 0.4);
+        }
+        
+        /* نتایج */
+        .results-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+        
+        .results-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1e293b;
+        }
+        
+        .results-count {
+            background: #e2e8f0;
+            padding: 6px 16px;
+            border-radius: 40px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #475569;
+        }
+        
+        .results-container {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 20px;
+            overflow: hidden;
+        }
+        
+        .results-header-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            padding: 16px 20px;
+            background: #f8fafc;
+            font-weight: 700;
+            font-size: 14px;
+            color: #1e293b;
+            border-bottom: 2px solid #e2e8f0;
+        }
+        
+        .results-list {
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        
+        .result-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            padding: 14px 20px;
+            border-bottom: 1px solid #f1f5f9;
+            font-size: 13px;
+            transition: background 0.2s;
+            cursor: pointer;
+        }
+        
+        .result-row:hover {
+            background: #f1f5f9;
+        }
+        
+        .result-number {
+            color: #3b82f6;
+            font-weight: 600;
+            direction: ltr;
+        }
+        
+        /* دستیار هوشمند */
+        .ai-sidebar {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 24px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            height: fit-content;
+            position: sticky;
+            top: 24px;
+            box-shadow: 0 15px 30px -10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .ai-header {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            color: white;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .ai-header-icon {
+            font-size: 28px;
+        }
+        
+        .ai-header-text {
+            font-weight: 700;
+            font-size: 18px;
+        }
+        
+        .ai-header-sub {
+            font-size: 12px;
+            opacity: 0.9;
+            margin-top: 4px;
+        }
+        
+        .ai-chat {
+            display: flex;
+            flex-direction: column;
+            height: 600px;
+        }
+        
+        .ai-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            background: #f8fafc;
+        }
+        
+        .message {
+            display: flex;
+            gap: 12px;
+            max-width: 90%;
+        }
+        
+        .message.user {
+            align-self: flex-end;
+            flex-direction: row-reverse;
+        }
+        
+        .message-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 12px;
+            background: #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+        
+        .message.user .message-avatar {
+            background: #3b82f6;
+            color: white;
+        }
+        
+        .message-content {
+            background: #f1f5f9;
+            padding: 12px 16px;
+            border-radius: 16px;
+            font-size: 13px;
+            line-height: 1.6;
+            color: #1e293b;
+            white-space: pre-wrap;
+        }
+        
+        .message.user .message-content {
+            background: #3b82f6;
+            color: white;
+        }
+        
+        .message.ai .message-content {
+            background: white;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .typing-indicator {
+            display: flex;
+            gap: 4px;
+            padding: 12px 16px;
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            width: fit-content;
+        }
+        
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            background: #94a3b8;
+            border-radius: 50%;
+            animation: typing 1.4s infinite;
+        }
+        
+        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+        
+        @keyframes typing {
+            0%, 60%, 100% { transform: translateY(0); opacity: 0.5; }
+            30% { transform: translateY(-8px); opacity: 1; }
+        }
+        
+        .ai-input-area {
+            padding: 20px;
+            border-top: 1px solid #e2e8f0;
+            background: white;
+        }
+        
+        .ai-input-container {
+            display: flex;
+            gap: 10px;
+            background: #f1f5f9;
+            border-radius: 50px;
+            padding: 6px;
+        }
+        
+        .ai-input {
+            flex: 1;
+            border: none;
+            background: transparent;
+            padding: 12px 18px;
+            font-size: 14px;
+            outline: none;
+        }
+        
+        .ai-send-btn {
+            width: 48px;
+            height: 48px;
+            border: none;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 6px 15px rgba(59, 130, 246, 0.3);
+        }
+        
+        .ai-send-btn:hover:not(:disabled) {
+            transform: scale(1.1) rotate(5deg);
+        }
+        
+        .ai-send-btn:disabled {
+            background: #94a3b8;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+        
+        .ai-suggestions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 16px;
+        }
+        
+        .suggestion-chip {
+            background: #f1f5f9;
+            border: 1px solid #e2e8f0;
+            border-radius: 30px;
+            padding: 6px 14px;
+            font-size: 11px;
+            font-weight: 500;
+            color: #475569;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .suggestion-chip:hover {
+            background: #3b82f6;
+            color: white;
+            border-color: #3b82f6;
+            transform: translateY(-2px);
+        }
+        
+        @media (max-width: 1200px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .dimensions {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .ai-sidebar {
+                position: static;
+            }
+        }
+        
+        @media (max-width: 640px) {
+            .dimensions {
+                grid-template-columns: 1fr;
+            }
+            
+            .results-header-row {
+                display: none;
+            }
+            
+            .result-row {
+                grid-template-columns: 1fr;
+                gap: 8px;
+                text-align: center;
+                padding: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- هدر -->
+        <div class="header">
+            <div class="logo">
+                <div class="logo-icon">AB</div>
+                <div class="logo-text">ARTA BEARING</div>
+            </div>
+            <div class="badge">نسخه ۳.۰ با DeepSeek AI</div>
+        </div>
+        
+        <!-- انتخابگر حالت -->
+        <div class="mode-selector">
+            <button class="mode-btn inch-mode active" onclick="switchMode('inch')">📏 اینچی</button>
+            <button class="mode-btn metric-mode" onclick="switchMode('metric')">⚙️ متریک</button>
+        </div>
+
+        <!-- کارت اطلاعات -->
+        <div class="info-card">
+            <div class="info-text">
+                <span>📊</span>
+                <span id="modeInfo">حالت جاری: اینچی</span>
+            </div>
+            <div class="info-badge" id="dataCount">۰</div>
+        </div>
+
+        <!-- محتوای اصلی دو ستونه -->
+        <div class="main-content">
+            <!-- بخش جستجو -->
+            <div>
+                <div class="mode-hint" id="modeHint">
+                    <span>📏</span>
+                    <span>در حالت اینچی می‌توانید برای هر بعد محدوده (حداقل و حداکثر) وارد کنید</span>
+                </div>
+
+                <div class="search-section">
+                    <div class="dimensions">
+                        <div class="dimension-card">
+                            <div class="dimension-title">🔢 شماره بلبرینگ</div>
+                            <input type="text" id="bearingNumber" placeholder="مثال: 6205" style="width:100%; padding:10px; border:1px solid #e2e8f0; border-radius:12px;">
+                        </div>
+
+                        <div class="dimension-card">
+                            <div class="dimension-title">🔧 قطر داخلی d <code>mm</code></div>
+                            <div style="display:flex; gap:4px;">
+                                <input type="number" id="min_d" step="0.001" placeholder="حداقل">
+                                <span style="color:#94a3b8;">-</span>
+                                <input type="number" id="max_d" step="0.001" placeholder="حداکثر">
+                            </div>
+                        </div>
+
+                        <div class="dimension-card">
+                            <div class="dimension-title">⚙️ قطر خارجی D <code>mm</code></div>
+                            <div style="display:flex; gap:4px;">
+                                <input type="number" id="min_D" step="0.001" placeholder="حداقل">
+                                <span style="color:#94a3b8;">-</span>
+                                <input type="number" id="max_D" step="0.001" placeholder="حداکثر">
+                            </div>
+                        </div>
+
+                        <div class="dimension-card">
+                            <div class="dimension-title">📏 عرض B <code>mm</code></div>
+                            <div style="display:flex; gap:4px;">
+                                <input type="number" id="min_B" step="0.001" placeholder="حداقل">
+                                <span style="color:#94a3b8;">-</span>
+                                <input type="number" id="max_B" step="0.001" placeholder="حداکثر">
+                            </div>
+                        </div>
+                    </div>
+
+                    <button class="search-btn" id="searchBtn">
+                        <span>🔍</span>
+                        جستجو
+                    </button>
+                </div>
+
+                <div class="results-header">
+                    <span class="results-title">📋 نتایج جستجو</span>
+                    <span class="results-count" id="resultCount">۰</span>
+                </div>
+                
+                <div class="results-container">
+                    <div class="results-header-row">
+                        <span>شماره بلبرینگ</span>
+                        <span>d (mm)</span>
+                        <span>D (mm)</span>
+                        <span>B (mm)</span>
+                    </div>
+                    <div class="results-list" id="resultsList">
+                        <div class="empty-state">
+                            <div style="text-align:center; padding:60px 20px; color:#94a3b8;">
+                                🔍 برای شروع جستجو، مقادیر را وارد کنید
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- بخش دستیار هوشمند DeepSeek -->
+            <div class="ai-sidebar">
+                <div class="ai-header">
+                    <span class="ai-header-icon">🤖</span>
+                    <div>
+                        <div class="ai-header-text">دستیار فنی DeepSeek</div>
+                        <div class="ai-header-sub">پرسش‌های تخصصی بلبرینگ</div>
+                    </div>
+                </div>
+
+                <div class="ai-chat">
+                    <div class="ai-messages" id="aiMessages">
+                        <div class="message ai">
+                            <div class="message-avatar">🤖</div>
+                            <div class="message-content">
+                                سلام! 👋
+                                <br><br>
+                                من دستیار هوشمند DeepSeek هستم. می‌توانم در مورد:
+                                <br>• مشخصات فنی بلبرینگ‌ها
+                                <br>• کاربردها و استانداردها
+                                <br>• راهنمای انتخاب بلبرینگ مناسب
+                                <br>• تحلیل ابعاد و تلرانس‌ها
+                                <br>• و هر سوال فنی دیگر
+                                <br><br>
+                                به شما کمک کنم. بپرسید!
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="ai-input-area">
+                        <div class="ai-input-container">
+                            <input type="text" class="ai-input" id="aiInput" 
+                                   placeholder="سوال فنی خود را بپرسید..." 
+                                   onkeypress="if(event.key === 'Enter') sendMessage()">
+                            <button class="ai-send-btn" id="aiSendBtn" onclick="sendMessage()">
+                                <span>📤</span>
+                            </button>
+                        </div>
+
+                        <div class="ai-suggestions">
+                            <span class="suggestion-chip" onclick="useSuggestion('مشخصات فنی بلبرینگ 6205 چیست؟')">🔧 مشخصات 6205</span>
+                            <span class="suggestion-chip" onclick="useSuggestion('فرق بلبرینگ اینچی و متریک چیست؟')">📏 فرق اینچی و متریک</span>
+                            <span class="suggestion-chip" onclick="useSuggestion('چطور بلبرینگ مناسب برای الکتروموتور انتخاب کنم؟')">⚡ انتخاب بلبرینگ</span>
+                            <span class="suggestion-chip" onclick="useSuggestion('عمر مفید بلبرینگ به چه عواملی بستگی دارد؟')">⏳ عمر مفید</span>
+                            <span class="suggestion-chip" onclick="useSuggestion('بلبرینگ 6310 چه ابعادی دارد؟')">📊 ابعاد 6310</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // =====================================================
+        // 📌 محل قرار دادن اطلاعات بلبرینگ
+        // =====================================================
+        
+        // آرایه بلبرینگ‌های اینچی - اطلاعات خود را اینجا قرار دهید
+        let inchBearings = [
+            // مثال: 
+            // { "number": "شماره بلبرینگ", "dimensions": { "d": 25, "D": 52, "B": 15 } },
+        ];
+
+        // آرایه بلبرینگ‌های متریک - اطلاعات خود را اینجا قرار دهید
+        let metricBearings = [
+            // مثال:
+            // { "number": "6205", "dimensions": { "d": 25, "D": 52, "B": 15 } },
+        ];
+
+        // =====================================================
+        // تنظیمات DeepSeek API
+        const DEEPSEEK_API_KEY = "sk-b76814fdaa0441b8a42fb01fe3c1593e";
+        const DEEPSEEK_API_URL = "https://api.deepseek.com/v1/chat/completions";
+
+        // متغیرهای سراسری
+        let currentBearings = inchBearings;
+        let currentMode = 'inch';
+        let searchTimeout;
+
+        // المنت‌ها
+        const modeInfo = document.getElementById('modeInfo');
+        const dataCount = document.getElementById('dataCount');
+        const modeHint = document.getElementById('modeHint');
+        const resultCount = document.getElementById('resultCount');
+        const resultsList = document.getElementById('resultsList');
+        const searchBtn = document.getElementById('searchBtn');
+        const aiMessages = document.getElementById('aiMessages');
+        const aiInput = document.getElementById('aiInput');
+        const aiSendBtn = document.getElementById('aiSendBtn');
+
+        // =====================================================
+        // توابع جستجو (مثل قبل)
+        function updateDataInfo() {
+            const count = currentBearings.length;
+            const modeName = currentMode === 'inch' ? 'اینچی' : 'متریک';
+            modeInfo.innerText = `حالت جاری: ${modeName}`;
+            dataCount.innerText = count.toLocaleString('fa-IR');
+        }
+
+        function switchMode(mode) {
+            currentMode = mode;
+            
+            document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
+            
+            if (mode === 'inch') {
+                document.querySelector('.inch-mode').classList.add('active');
+                currentBearings = inchBearings;
+                modeHint.innerHTML = '<span>📏</span><span>در حالت اینچی می‌توانید برای هر بعد محدوده (حداقل و حداکثر) وارد کنید</span>';
+            } else {
+                document.querySelector('.metric-mode').classList.add('active');
+                currentBearings = metricBearings;
+                modeHint.innerHTML = '<span>⚙️</span><span>در حالت متریک می‌توانید برای هر بعد محدوده (حداقل و حداکثر) وارد کنید</span>';
+            }
+            
+            updateDataInfo();
+            clearFields();
+            performSearch();
+        }
+
+        function clearFields() {
+            document.getElementById('bearingNumber').value = '';
+            document.getElementById('min_d').value = '';
+            document.getElementById('max_d').value = '';
+            document.getElementById('min_D').value = '';
+            document.getElementById('max_D').value = '';
+            document.getElementById('min_B').value = '';
+            document.getElementById('max_B').value = '';
+        }
+
+        function performSearch() {
+            const searchNumber = document.getElementById('bearingNumber').value.trim().toLowerCase();
+            
+            let results = currentBearings;
+
+            if (searchNumber) {
+                results = results.filter(b => 
+                    b.number.toString().toLowerCase().includes(searchNumber)
+                );
+            }
+
+            const min_d = document.getElementById('min_d').value ? parseFloat(document.getElementById('min_d').value) : -Infinity;
+            const max_d = document.getElementById('max_d').value ? parseFloat(document.getElementById('max_d').value) : Infinity;
+            const min_D = document.getElementById('min_D').value ? parseFloat(document.getElementById('min_D').value) : -Infinity;
+            const max_D = document.getElementById('max_D').value ? parseFloat(document.getElementById('max_D').value) : Infinity;
+            const min_B = document.getElementById('min_B').value ? parseFloat(document.getElementById('min_B').value) : -Infinity;
+            const max_B = document.getElementById('max_B').value ? parseFloat(document.getElementById('max_B').value) : Infinity;
+
+            results = results.filter(b => 
+                b.dimensions.d >= min_d && b.dimensions.d <= max_d &&
+                b.dimensions.D >= min_D && b.dimensions.D <= max_D &&
+                b.dimensions.B >= min_B && b.dimensions.B <= max_B
+            );
+
+            showResults(results);
+        }
+
+        function showResults(results) {
+            resultCount.innerText = results.length.toLocaleString('fa-IR');
+
+            if (results.length === 0) {
+                resultsList.innerHTML = '<div style="text-align:center; padding:60px 20px; color:#94a3b8;">🔍 نتیجه‌ای یافت نشد</div>';
+                return;
+            }
+
+            let html = '';
+            results.slice(0, 500).forEach(b => {
+                html += `
+                    <div class="result-row" onclick="useBearingNumber('${b.number}')">
+                        <span class="result-number">${b.number}</span>
+                        <span>${b.dimensions.d.toFixed(3)}</span>
+                        <span>${b.dimensions.D.toFixed(3)}</span>
+                        <span>${b.dimensions.B.toFixed(3)}</span>
+                    </div>
+                `;
+            });
+
+            if (results.length > 500) {
+                html += `<div style="padding:16px; text-align:center; background:#f8fafc; font-size:12px;">📌 نمایش ۵۰۰ نتیجه از ${results.length.toLocaleString('fa-IR')}</div>`;
+            }
+
+            resultsList.innerHTML = html;
+        }
+
+        function useBearingNumber(number) {
+            document.getElementById('bearingNumber').value = number;
+            performSearch();
+        }
+
+        // =====================================================
+        // دستیار هوشمند DeepSeek (کاملاً کارآمد روی GitHub Pages)
+        
+        async function sendMessage() {
+            const message = aiInput.value.trim();
+            if (!message) return;
+
+            // نمایش پیام کاربر
+            addMessage(message, 'user');
+            aiInput.value = '';
+            aiInput.disabled = true;
+            aiSendBtn.disabled = true;
+
+            // نمایش اندیکاتور تایپ
+            showTypingIndicator();
+
+            try {
+                const response = await askDeepSeek(message);
+                removeTypingIndicator();
+                addMessage(response, 'ai');
+            } catch (error) {
+                removeTypingIndicator();
+                let errorMessage = 'خطا در ارتباط با DeepSeek: ';
+                
+                if (error.message.includes('401')) {
+                    errorMessage += 'کلید API نامعتبر است.';
+                } else if (error.message.includes('429')) {
+                    errorMessage += 'محدودیت تعداد درخواست.';
+                } else {
+                    errorMessage += 'لطفاً دوباره تلاش کنید.';
+                }
+                
+                addMessage(errorMessage, 'ai');
+                console.error(error);
+            } finally {
+                aiInput.disabled = false;
+                aiSendBtn.disabled = false;
+                aiInput.focus();
+            }
+        }
+
+        async function askDeepSeek(question) {
+            // سیستم پرامپت تخصصی بلبرینگ
+            const systemPrompt = `شما یک متخصص در زمینه بلبرینگ (Bearings) هستید. 
+به سوالات فنی کاربران به زبان فارسی پاسخ دهید. پاسخ‌ها باید:
+- دقیق و مبتنی بر دانش فنی باشند
+- شامل اعداد و مشخصات فنی باشند
+- کاربردی و قابل فهم باشند
+- در صورت نیاز به اعداد، از فرمت اعشاری استفاده کنید
+
+اگر کاربر شماره بلبرینگی را پرسید، مشخصات استاندارد آن را توضیح دهید.
+اگر درباره کاربردها پرسید، مثال‌های عملی بزنید.
+اگر درباره انتخاب بلبرینگ پرسید، معیارهای مهم را توضیح دهید.`;
+
+            const response = await fetch(DEEPSEEK_API_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${DEEPSEEK_API_KEY}`
+                },
+                body: JSON.stringify({
+                    model: 'deepseek-chat',
+                    messages: [
+                        { role: 'system', content: systemPrompt },
+                        { role: 'user', content: question }
+                    ],
+                    temperature: 0.7,
+                    max_tokens: 2000
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const data = await response.json();
+            return data.choices[0].message.content;
+        }
+
+        function addMessage(text, sender) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}`;
+            messageDiv.innerHTML = `
+                <div class="message-avatar">${sender === 'user' ? '👤' : '🤖'}</div>
+                <div class="message-content">${text.replace(/\n/g, '<br>')}</div>
+            `;
+            aiMessages.appendChild(messageDiv);
+            aiMessages.scrollTop = aiMessages.scrollHeight;
+        }
+
+        function showTypingIndicator() {
+            const indicator = document.createElement('div');
+            indicator.className = 'message ai';
+            indicator.id = 'typingIndicator';
+            indicator.innerHTML = `
+                <div class="message-avatar">🤖</div>
+                <div class="typing-indicator">
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                </div>
+            `;
+            aiMessages.appendChild(indicator);
+            aiMessages.scrollTop = aiMessages.scrollHeight;
+        }
+
+        function removeTypingIndicator() {
+            const indicator = document.getElementById('typingIndicator');
+            if (indicator) indicator.remove();
+        }
+
+        function useSuggestion(text) {
+            aiInput.value = text;
+            sendMessage();
+        }
+
+        // رویدادها
+        searchBtn.addEventListener('click', performSearch);
+        document.querySelectorAll('input').forEach(input => {
+            if (input.id !== 'aiInput') {
+                input.addEventListener('input', () => {
+                    if (searchTimeout) clearTimeout(searchTimeout);
+                    searchTimeout = setTimeout(performSearch, 300);
+                });
+            }
+        });
+
+        // شروع برنامه
+        window.addEventListener('load', () => {
+            updateDataInfo();
+            performSearch();
+        });
+    </script>
+</body>
+</html>
